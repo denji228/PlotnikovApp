@@ -1,0 +1,46 @@
+{% extends 'PlotnikovApp/base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2>Административная панель</h2>
+    
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Пользователь</th>
+                    <th>Проблема</th>
+                    <th>Категория</th>
+                    <th>Дата/время</th>
+                    <th>Способ</th>
+                    <th>Статус</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for consultation in consultations %}
+                <tr>
+                    <td>{{ consultation.id }}</td>
+                    <td>{{ consultation.user.get_full_name }}</td>
+                    <td>{{ consultation.problem|truncatechars:30 }}</td>
+                    <td>{{ consultation.get_category_display }}</td>
+                    <td>{{ consultation.date_time|date:"d.m.Y H:i" }}</td>
+                    <td>{{ consultation.get_method_display }}</td>
+                    <td>
+                        <span class="badge bg-{% if consultation.status == 'new' %}primary{% elif consultation.status == 'solved' %}success{% elif consultation.status == 'canceled' %}danger{% else %}warning{% endif %}">
+                            {{ consultation.get_status_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{% url 'update_status' consultation.id %}" class="btn btn-sm btn-outline-primary">
+                            Изменить статус
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'PlotnikovApp/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <h2>Личный кабинет</h2>
+        <h3 class="mt-4">Новая заявка</h3>
+        
+        <div class="card mb-4">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <button type="submit" class="btn btn-primary">Создать заявку</button>
+                </form>
+            </div>
+        </div>
+        
+        <h3>Мои заявки</h3>
+        <div class="list-group">
+            {% for consultation in consultations %}
+            <div class="list-group-item">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">{{ consultation.get_category_display }}</h5>
+                    <span class="badge bg-{% if consultation.status == 'new' %}primary{% elif consultation.status == 'solved' %}success{% elif consultation.status == 'canceled' %}danger{% else %}warning{% endif %}">
+                        {{ consultation.get_status_display }}
+                    </span>
+                </div>
+                <p class="mb-1">{{ consultation.problem }}</p>
+                <small>Дата: {{ consultation.date_time|date:"d.m.Y H:i" }}</small>
+                <small class="d-block">Способ: {{ consultation.get_method_display }}</small>
+                {% if consultation.cancel_reason %}
+                <div class="alert alert-danger mt-2">
+                    <strong>Причина отмены:</strong> {{ consultation.cancel_reason }}
+                </div>
+                {% endif %}
+            </div>
+            {% empty %}
+            <div class="list-group-item">
+                У вас пока нет заявок
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
